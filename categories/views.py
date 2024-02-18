@@ -8,6 +8,7 @@ from categories.serializers import CategorySerializer
 # Create your views here.
 
 @api_view(['GET'])
+@permission_classes([IsAdminUser])
 def categories_with_products_list(request):
     categories = Category.objects.all()
     serialized_data = CategorySerializer(categories, many=True).data
