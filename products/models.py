@@ -14,10 +14,10 @@ class Product(models.Model):
         unique=True,
         help_text=_("This will be displayed to user as-is"),
     )
-    price = models.PositiveSmallIntegerField(
-        _("selling price (Rs.)"),
-        help_text=_("Price payable by customer (Rs.)"),
-    )
+    # price = models.PositiveSmallIntegerField(
+    #     _("selling price (Rs.)"),
+    #     help_text=_("Price payable by customer (Rs.)"),
+    # )
     description = models.TextField(
         _("descriptive write-up"),
         unique=True,
@@ -53,7 +53,7 @@ class Product(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.name} (Rs. {self.price})"
+        return f"{self.name}"
 
     class Meta:
         # Just to be explicit.
@@ -66,7 +66,9 @@ class Product(models.Model):
 class Sku(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     size = models.PositiveSmallIntegerField()
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    selling_price = models.DecimalField(max_digits=10, decimal_places=2)
+    platform_commission = models.PositiveSmallIntegerField()
+    cost_price = models.PositiveSmallIntegerField()
 
     def __str__(self):
         return f"{self.product.name} - {self.size} gm"
