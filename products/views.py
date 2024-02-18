@@ -7,12 +7,13 @@ from rest_framework.status import (
     HTTP_400_BAD_REQUEST,
     HTTP_404_NOT_FOUND,
 )
-
+from categories.models import *
 
 from django.shortcuts import get_object_or_404
 
 from .models import *
 from .serializers import *
+
 
 
 @api_view(["GET"])
@@ -45,7 +46,7 @@ def create_sku(request):
 @permission_classes([AllowAny])
 def product_info(request, pk):
     try:
-        product = Product.objects.get(pk=pk)
+        product = Product.objects.get(pk=pk)     # check for product object
     except Product.DoesNotExist:
         return Response({"message": "Product does not exist"}, status=HTTP_404_NOT_FOUND)
 
@@ -66,7 +67,7 @@ def product_info(request, pk):
 @api_view(['PUT'])
 @permission_classes([IsAdminUser])
 def edit_sku_status(request, sku_id):
-    sku = get_object_or_404(Sku, pk=sku_id)
+    sku = get_object_or_404(Sku, pk=sku_id)  #check for obejct 
     
     serializer = SkuEditStatusSerializer(sku, data=request.data)
     if serializer.is_valid():
@@ -77,3 +78,31 @@ def edit_sku_status(request, sku_id):
             status=HTTP_200_OK)
     else:
         return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+    
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+
+def active_categories_with_approved_skus(request):
+    active_categories = Category.objects.filter(is_active=True) # Get all active categories
+    # Print each category along with the count of its approved SKUs
+    for category in active_categories:
+        approved_skus_count = category.products.filter(sku__status=1).count()  # filter and count objects with status = 1
+        print(f"Category: {category.name} | Approved SKUs: {approved_skus_count}")
+    
+    
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def all_skus(request):
+    all_skus_with_categories = Sku.objects.select_related('product__category')
+
+    for sku in all_skus_with_categories: # Print each Sku along with its category
+        print(f"Sku: {sku} | Category: {sku.product.category.name}")
+        
+    
+    """
+    
+    Minimal DB queries and minimal python iteration can be achieved using annotation and aggregation.
+    
+    """

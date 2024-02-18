@@ -32,6 +32,6 @@ class SkuEditStatusSerializer(serializers.ModelSerializer):
         fields = ['status']
 
     def update(self, instance, validated_data):
-        instance.status = validated_data.get('status', instance.status)
+        instance.status = validated_data.get('status', instance.status)  # update Sku object with the validated status
         instance.save()
         return instance
