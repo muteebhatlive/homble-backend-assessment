@@ -42,7 +42,12 @@ class Product(models.Model):
         on_delete=models.SET_NULL,
     )
     created_at = models.DateTimeField(auto_now_add=True)
-
+    edited_at = models.DateTimeField(auto_now=True)
+    ingredients = models.CharField(
+        _("ingredients"),
+        max_length=500,
+        default = 'Not Specified'
+    )
     def save(self, *args, **kwargs):
         self.name = self.name.strip().title()
         super().save(*args, **kwargs)
