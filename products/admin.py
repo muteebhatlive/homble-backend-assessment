@@ -4,10 +4,16 @@ from products.models import Product, Sku
 
 
 class SkuAdmin(admin.ModelAdmin):
-    list_display = ("product", "size", "selling_price","cost_price", "platform_commission")
+    list_display = ("product", "size", "selling_price")
     search_fields = ("product__name",)
     autocomplete_fields = ("product",)
-    
+    fields = (
+        ("product",),
+        ("size"),
+        ("selling_price","cost_price", "platform_commission"),
+        ("measurement_unit", "status", "markup_percentage"),
+        
+    )
     
     
 class SkuInline(admin.StackedInline):

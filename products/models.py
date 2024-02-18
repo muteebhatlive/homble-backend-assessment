@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django.core.validators import MaxValueValidator
 
 
 class Product(models.Model):
@@ -64,12 +65,43 @@ class Product(models.Model):
 
 
 class Sku(models.Model):
+    
+    MEASUREMENT_UNIT_CHOICES = [
+        ('gm', 'gm'),
+        ('kg', 'kg'),
+        ('ml', 'ml'),
+        ('l', 'l'),
+        ('pc', 'piece'),
+    ]
+
+    STATUS_CHOICES = [
+        (0, 'Pending for approval'),
+        (1, 'Approved'),
+        (2, 'Discontinued'),
+    ]
+    
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    size = models.PositiveSmallIntegerField()
+    size = models.PositiveSmallIntegerField(validators=[MaxValueValidator(999)])
     selling_price = models.DecimalField(max_digits=10, decimal_places=2)
     platform_commission = models.PositiveSmallIntegerField()
     cost_price = models.PositiveSmallIntegerField()
+    measurement_unit = models.CharField(max_length=2, choices=MEASUREMENT_UNIT_CHOICES)
+    status = models.IntegerField(choices=STATUS_CHOICES, default=0)
+    markup_percentage = models.DecimalField(max_digits=3, decimal_places=2, blank=True, null=True)
 
+
+    
+    def save(self, *args, **kwargs):
+        if self.cost_price:
+            print(self.platform_commission)
+            print(type(self.platform_commission))
+            print(self.cost_price)
+            print(type(self.cost_price))
+            
+            self.markup_percentage = (self.platform_commission / self.cost_price)
+        self.selling_price = self.cost_price + self.platform_commission
+        super().save(*args, **kwargs)
+        
     def __str__(self):
         return f"{self.product.name} - {self.size} gm"
 
