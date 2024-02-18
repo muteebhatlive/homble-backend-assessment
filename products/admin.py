@@ -4,7 +4,7 @@ from products.models import Product, Sku
 
 
 class SkuAdmin(admin.ModelAdmin):
-    list_display = ("product", "size", "price")
+    list_display = ("product", "size", "selling_price","cost_price", "platform_commission")
     search_fields = ("product__name",)
     autocomplete_fields = ("product",)
     
@@ -17,12 +17,12 @@ class SkuInline(admin.StackedInline):
     
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ("name", "price", "managed_by")
+    list_display = ("name", "managed_by")
     ordering = ("-id",)
     search_fields = ("name",)
     list_filter = ("is_refrigerated", "category")
     fields = (
-        ("name", "price"),
+        ("name",),
         ("category", "is_refrigerated"),
         "description",
         "ingredients",
@@ -42,7 +42,7 @@ class ProductInline(admin.StackedInline):
     model = Product
     extra = 0
     ordering = ("-id",)
-    readonly_fields = ("name", "price", "is_refrigerated")
+    readonly_fields = ("name","is_refrigerated")
     fields = (readonly_fields,)
     show_change_link = True
 
