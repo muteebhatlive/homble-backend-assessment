@@ -1,8 +1,20 @@
 from django.contrib import admin
 
-from products.models import Product
+from products.models import Product, Sku
 
 
+class SkuAdmin(admin.ModelAdmin):
+    list_display = ("product", "size", "price")
+    search_fields = ("product__name",)
+    autocomplete_fields = ("product",)
+    
+    
+    
+class SkuInline(admin.StackedInline):
+    model = Sku
+    extra = 0
+    autocomplete_fields = ("product",)
+    
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = ("name", "price", "managed_by")
@@ -20,7 +32,7 @@ class ProductAdmin(admin.ModelAdmin):
     )
     autocomplete_fields = ("category", "managed_by")
     readonly_fields = ("id", "created_at", "edited_at")
-
+    inlines = [SkuInline]
 
 class ProductInline(admin.StackedInline):
     """
@@ -33,3 +45,5 @@ class ProductInline(admin.StackedInline):
     readonly_fields = ("name", "price", "is_refrigerated")
     fields = (readonly_fields,)
     show_change_link = True
+
+admin.site.register(Sku, SkuAdmin)
