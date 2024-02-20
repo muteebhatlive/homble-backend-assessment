@@ -25,7 +25,8 @@ def products_list(request):
     refrigerated = request.query_params.get('refrigerated')  # get "refrigerated" query parameter from the request
 
     if refrigerated is not None:
-        products = Product.objects.filter(is_refrigerated=bool(refrigerated))
+        products = Product.objects.filter(is_refrigerated=(refrigerated))
+        print(products)
     else:
         products = Product.objects.all()
     serializer = ProductListSerializer(products, many=True)
@@ -33,6 +34,7 @@ def products_list(request):
 
 
 @api_view(['POST'])
+@permission_classes([IsAdminUser])
 def create_sku(request):
     serializer = SkuCreateSerializer(data=request.data)
     print(request.data)
